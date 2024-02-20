@@ -80,12 +80,18 @@ export const friendshipRequestRouter = router({
        *  - Run `yarn test` to verify your answer
        */
       return ctx.db
-        .replaceInto('friendships')
+        .insertInto('friendships')
         .values({
           userId: ctx.session.userId,
           friendUserId: input.friendUserId,
           status: FriendshipStatusSchema.Values['requested'],
         })
+        .onConflict((oc) =>
+          oc
+            .column('userId')
+            .column('friendUserId')
+            .doUpdateSet({ status: FriendshipStatusSchema.Values['requested'] })
+        )
         .execute()
     }),
 
@@ -126,12 +132,17 @@ export const friendshipRequestRouter = router({
           .execute()
 
         return await t
-          .replaceInto('friendships')
+          .insertInto('friendships')
           .values({
             userId: ctx.session.userId,
             friendUserId: input.friendUserId,
             status: FriendshipStatusSchema.Values['accepted'],
           })
+          .onConflict((oc) =>
+            oc.column('userId').column('friendUserId').doUpdateSet({
+              status: FriendshipStatusSchema.Values['accepted'],
+            })
+          )
           .execute()
       })
     }),
