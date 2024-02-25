@@ -290,4 +290,108 @@ describe.concurrent('Friendship request', async () => {
       })
     )
   })
+
+  /**
+   * Scenario:
+   *  1. User B, C, D, E send friendship requests to user A
+   *  2. User C sends a friendship request to user B
+   *  3. User E sends a friendship request to user D
+   *  4. User E sends a friendship request to user B
+   *  5. User A accept all friend requests
+   *  6. User B accept C and E friend requests
+   *  7. User D accept E friend request
+   *
+   *  -> Return array of all friends of A
+   *
+   */
+  test('Question 5 / Scenario 1', async ({ expect }) => {
+    const [userA, userB, userC, userD, userE] = await Promise.all([
+      createUser(),
+      createUser(),
+      createUser(),
+      createUser(),
+      createUser(),
+    ])
+
+    await Promise.all([
+      userB.sendFriendshipRequest({
+        friendUserId: userA.id,
+      }),
+      userC.sendFriendshipRequest({
+        friendUserId: userA.id,
+      }),
+      userD.sendFriendshipRequest({
+        friendUserId: userA.id,
+      }),
+      userE.sendFriendshipRequest({
+        friendUserId: userA.id,
+      }),
+      userC.sendFriendshipRequest({
+        friendUserId: userB.id,
+      }),
+      userE.sendFriendshipRequest({
+        friendUserId: userD.id,
+      }),
+      userE.sendFriendshipRequest({
+        friendUserId: userB.id,
+      }),
+    ])
+
+    await Promise.all([
+      userA.acceptFriendshipRequest({
+        friendUserId: userB.id,
+      }),
+      userA.acceptFriendshipRequest({
+        friendUserId: userC.id,
+      }),
+      userA.acceptFriendshipRequest({
+        friendUserId: userD.id,
+      }),
+      userA.acceptFriendshipRequest({
+        friendUserId: userE.id,
+      }),
+      userB.acceptFriendshipRequest({
+        friendUserId: userC.id,
+      }),
+      userB.acceptFriendshipRequest({
+        friendUserId: userE.id,
+      }),
+      userD.acceptFriendshipRequest({
+        friendUserId: userE.id,
+      }),
+    ])
+
+    await expect(userA.getAllFriendship()).resolves.toEqual(
+      expect.arrayContaining<object>(<object[]>[
+        {
+          id: userE.id,
+          mutualFriendCount: 2,
+          phoneNumber: userE.phoneNumber,
+          totalFriendCount: 3,
+          fullName: userE.fullName,
+        },
+        {
+          id: userB.id,
+          mutualFriendCount: 2,
+          phoneNumber: userB.phoneNumber,
+          totalFriendCount: 3,
+          fullName: userB.fullName,
+        },
+        {
+          id: userC.id,
+          mutualFriendCount: 1,
+          phoneNumber: userC.phoneNumber,
+          totalFriendCount: 2,
+          fullName: userC.fullName,
+        },
+        {
+          id: userD.id,
+          mutualFriendCount: 1,
+          phoneNumber: userD.phoneNumber,
+          totalFriendCount: 2,
+          fullName: userD.fullName,
+        },
+      ])
+    )
+  })
 })
