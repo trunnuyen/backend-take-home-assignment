@@ -3,7 +3,6 @@ import { router } from '../trpc/router'
 import { myOutgoingFriendshipRequestRouter } from './routers/my-outgoing-friendship-request-router'
 import { friendshipRequestRouter } from './routers/friendship-request-router'
 import { myFriendRouter } from './routers/my-friend-router'
-import { allMyFriendRouter } from './routers/all-my-friend-router'
 
 /**
  * This is the primary router for your server.
@@ -14,7 +13,6 @@ export const appRouter = router({
   friendshipRequest: friendshipRequestRouter,
   myFriend: myFriendRouter,
   myOutGoingFriendshipRequest: myOutgoingFriendshipRequestRouter,
-  allMyFriend: allMyFriendRouter,
 })
 
 export type AppRouter = typeof appRouter

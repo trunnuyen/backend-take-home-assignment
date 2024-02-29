@@ -40,6 +40,6 @@ export const createUser = async () => {
     declineFriendshipRequest: caller.friendshipRequest.decline,
     getFriendById: caller.myFriend.getById,
     getMyOutgoingFriendshipRequests: caller.myOutGoingFriendshipRequest.getAll,
-    getAllFriendship: caller.allMyFriend.getAll,
+    getAllFriendship: caller.myFriend.getAll,
   }
 }
